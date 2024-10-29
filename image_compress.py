@@ -3,8 +3,8 @@ from PIL import Image
 import os
 import shutil
 
-image_path = "C:\\Users\\ericf\\asdf\\Stars-20241005T210940Z-001\\Stars"
-output_path = "C:\\Users\\ericf\\asdf\\Stars-20241005T210940Z-001\\Stars_COMPRESSED"
+image_path = "YOUR INPUT PATH HERE"
+output_path = "YOUR OUTPUT PATH HERE"
 STEP_SIZE = 2
 
 def compress_image(image_path: str, output_path: str, target_size: int = 1048576) -> bool:  # 1MB in bytes
