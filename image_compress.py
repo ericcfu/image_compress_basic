@@ -2,12 +2,20 @@ import pathlib
 from PIL import Image
 import os
 import shutil
+from pillow_heif import register_heif_opener
 
-image_path = "YOUR INPUT PATH HERE"
-output_path = "YOUR OUTPUT PATH HERE"
+#########################################
+#
+# This python script is a basic script that downsizes images until they are smaller than a certain target size
+#
+#########################################
+
+image_path = "INPUT_PATH_HERE"
+output_path = "OUTPUT_PATH_HERE"
 STEP_SIZE = 2
+TARGET_SIZE = 1048576 # 1MB in bytes
 
-def compress_image(image_path: str, output_path: str, target_size: int = 1048576) -> bool:  # 1MB in bytes
+def compress_image(image_path: str, output_path: str, target_size: int = TARGET_SIZE) -> bool:
     """
     Compress an image to a target size.
 
@@ -63,4 +71,5 @@ def compress_dir(input_dir: str, output_dir: str):
     print(f"Stats: num_compressed: {num_compressed} num_skipped: {num_skipped} num_failed: {num_failed}")
 
 
+register_heif_opener()
 compress_dir(image_path, output_path)
