@@ -10,9 +10,9 @@ from pillow_heif import register_heif_opener
 #
 #########################################
 
-image_path = "INPUT_PATH_HERE"
-output_path = "OUTPUT_PATH_HERE"
-STEP_SIZE = 2
+image_path = "INPUT DIR HERE"
+output_path = "OUTPUT DIR HERE"
+STEP_SIZE = 5
 TARGET_SIZE = 1048576 # 1MB in bytes
 
 def compress_image(image_path: str, output_path: str, target_size: int = TARGET_SIZE) -> bool:
@@ -24,8 +24,10 @@ def compress_image(image_path: str, output_path: str, target_size: int = TARGET_
         output_path (str): Path to save the compressed image.
         target_size (int): Target size in bytes. Defaults to 1048576 (1MB).
     """
+    output_path = output_path.replace('.png', '.jpg')
     print(f"trying to compress image: {image_path}")
     image = Image.open(image_path)
+    image = image.convert('RGB')
 
     # Get initial image size
     initial_size = os.path.getsize(image_path)
@@ -40,11 +42,30 @@ def compress_image(image_path: str, output_path: str, target_size: int = TARGET_
     while True:
         image.save(output_path, optimize=True, quality=quality)
         compressed_size = os.path.getsize(output_path)
+        print(f"one iteration done, compressed_size {compressed_size}, quality {quality}")
+        
+        if compressed_size <= target_size:
+            print(f"filepath: {image_path} new file size: {compressed_size} compressed from old size: {initial_size}")
+            return True
+
+        if quality < 60:
+            print("quality has reached 60, move towards downsizing")
+            break
+
+        quality -= STEP_SIZE
+
+    scaling_factor = 0.95
+    while True:
+        downsized_img = image.resize((int(image.width * scaling_factor), int(image.height * scaling_factor)))
+        downsized_img.save(output_path, optimize=True, quality=quality)
+        compressed_size = os.path.getsize(output_path)
+        print(f"one iteration done, compressed_size {compressed_size}, quality {quality}")
 
         if compressed_size <= target_size:
             print(f"filepath: {image_path} new file size: {compressed_size} compressed from old size: {initial_size}")
             return True
-        quality -= STEP_SIZE
+        
+        scaling_factor -= 0.05
 
 
 def get_filenames(directory: str):
